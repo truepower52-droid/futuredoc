@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Готов ли ты к поступлению в мед? — Будущий врач</title>
+  <meta name="description" content="Викторина для школьников 10–11 классов. Проверь, насколько ты готов к поступлению в медицинский вуз." />
+  <meta property="og:title" content="Готов ли ты к поступлению в мед?" />
+  <meta property="og:description" content="12 вопросов для школьников 10–11 классов. Узнай, что ты знаешь о поступлении в медвуз." />
+  <meta property="og:type" content="website" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f1b3d 0%, #1a3a6b 55%, #0d2850 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Georgia, serif;
+      padding: 24px 16px;
+    }
+
+    #root { width: 100%; display: flex; justify-content: center; }
+
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 36px 32px;
+      max-width: 620px;
+      width: 100%;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 24px 18px; border-radius: 16px; }
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .header-label {
+      font-size: 11px;
+      font-family: Arial, sans-serif;
+      color: #7a8299;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .counter {
+      font-size: 13px;
+      font-family: Arial, sans-serif;
+      color: #3b6bef;
+      font-weight: 700;
+    }
+
+    .progress-track {
+      height: 5px;
+      background: #e8eaf0;
+      border-radius: 10px;
+      margin-bottom: 28px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3b6bef, #2ecc71);
+      border-radius: 10px;
+      transition: width 0.4s ease;
+    }
+
+    .question {
+      font-size: 19px;
+      font-weight: 700;
+      color: #0f1b3d;
+      line-height: 1.5;
+      margin-bottom: 22px;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 13px 15px;
+      border-radius: 12px;
+      text-align: left;
+      font-size: 15px;
+      line-height: 1.45;
+      font-family: Arial, sans-serif;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: #f7f8fa;
+      border: 2px solid #e8eaf0;
+      color: #1a1a2e;
+      width: 100%;
+    }
+
+    .option:hover:not(:disabled) {
+      border-color: #b0bef8;
+      background: #f0f3ff;
+    }
+
+    .option:disabled { cursor: default; }
+
+    .option.selected {
+      background: #eaf0ff;
+      border-color: #3b6bef;
+      color: #1a2e6b;
+    }
+
+    .option.correct {
+      background: #eafaf1;
+      border-color: #2ecc71;
+      color: #1a6b3c;
+    }
+
+    .option.wrong {
+      background: #fdecea;
+      border-color: #e74c3c;
+      color: #7b1e1e;
+    }
+
+    .option-letter {
+      font-weight: 700;
+      font-size: 12px;
+      min-width: 22px;
+      height: 22px;
+      background: rgba(59,107,239,0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .explanation {
+      background: #f0f4ff;
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 14px;
+      font-family: Arial, sans-serif;
+      color: #1a2e6b;
+      line-height: 1.65;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      animation: fadeIn 0.25s ease;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    .expl-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+    .primary-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #1a3a6b, #3b6bef);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      font-family: Arial, sans-serif;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      margin-bottom: 16px;
+    }
+
+    .primary-btn:hover:not(:disabled) { opacity: 0.92; transform: translateY(-1px); }
+    .primary-btn:disabled { opacity: 0.38; cursor: not-allowed; }
+
+    .score-sofar {
+      text-align: center;
+      font-size: 13px;
+      font-family: Arial, sans-serif;
+      color: #a0a8c0;
+    }
+
+    /* Result */
+    .result-emoji { font-size: 54px; text-align: center; margin-bottom: 8px; }
+    .result-score { text-align: center; font-size: 52px; font-weight: 700; color: #0f1b3d; margin-bottom: 4px; }
+    .result-title { text-align: center; font-size: 22px; font-weight: 700; color: #1a3a6b; margin-bottom: 14px; }
+    .result-text {
+      text-align: center;
+      font-size: 15px;
+      font-family: Arial, sans-serif;
+      color: #444;
+      line-height: 1.75;
+      margin-bottom: 24px;
+    }
+
+    .breakdown {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    .dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+    }
+
+    .result-link {
+      display: block;
+      text-align: center;
+      padding: 15px;
+      background: linear-gradient(135deg, #1a3a6b, #3b6bef);
+      color: #fff;
+      border-radius: 12px;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: Arial, sans-serif;
+      margin-bottom: 12px;
+      transition: opacity 0.2s;
+    }
+
+    .result-link:hover { opacity: 0.9; }
+
+    .restart-btn {
+      width: 100%;
+      padding: 13px;
+      background: transparent;
+      color: #3b6bef;
+      border: 2px solid #3b6bef;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: Arial, sans-serif;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .restart-btn:hover { background: #f0f4ff; }
+
+    .brand {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 12px;
+      font-family: Arial, sans-serif;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.04em;
+    }
+
+    .brand a { color: rgba(255,255,255,0.55); text-decoration: none; }
+    .brand a:hover { color: rgba(255,255,255,0.85); }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <div class="brand">
+    <a href="https://futuredoc.minzdrav.gov.ru/" target="_blank">futuredoc.minzdrav.gov.ru</a>
+    &nbsp;·&nbsp; Платформа «Будущий врач»
+  </div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    const questions = [
+      {
+        text: "Какие три предмета ЕГЭ нужны для поступления в большинство медицинских вузов?",
+        options: [
+          "Биология, химия, математика",
+          "Биология, химия, русский язык",
+          "Химия, физика, русский язык",
+          "Биология, физика, математика",
+        ],
+        correct: 1,
+        explanation: "Большинство медвузов принимают по ЕГЭ: химия + биология + русский язык. Некоторые вузы добавляют физику или математику для отдельных направлений — уточняйте на сайте конкретного вуза.",
+      },
+      {
+        text: "Сколько лет длится обучение по специальности «Лечебное дело»?",
+        options: ["4 года", "5 лет", "6 лет", "7 лет"],
+        correct: 2,
+        explanation: "Лечебное дело и Педиатрия — 6 лет. Стоматология — 5 лет. После вуза большинство врачей идут ещё в ординатуру (от 2 до 5 лет в зависимости от специальности).",
+      },
+      {
+        text: "Что такое целевое обучение?",
+        options: [
+          "Обучение с повышенной стипендией за отличную учёбу",
+          "Поступление по договору с работодателем с обязательством отработать после выпуска",
+          "Дистанционное обучение для жителей регионов",
+          "Обучение в медицинском колледже вместо вуза",
+        ],
+        correct: 1,
+        explanation: "Целевое обучение — договор между студентом, вузом и работодателем (чаще всего региональным Минздравом или больницей). Свой конкурс с обычно более низкими баллами. После выпуска нужно отработать указанный срок по направлению.",
+      },
+      {
+        text: "БВИ при поступлении — это...",
+        options: [
+          "Балл по внутреннему испытанию вуза",
+          "Бюджетное высшее исследование",
+          "Право поступить без вступительных испытаний",
+          "Биологический вступительный итог",
+        ],
+        correct: 2,
+        explanation: "БВИ даётся победителям и призёрам заключительного этапа Всероссийской олимпиады по профильному предмету. Действует 4 года. Это означает зачисление без ЕГЭ — при наличии аттестата.",
+      },
+      {
+        text: "Что такое ординатура?",
+        options: [
+          "Первые два курса медицинского вуза",
+          "Летняя практика в больнице",
+          "Углублённое обучение узкой специальности после вуза (2+ года)",
+          "Форма целевого направления от Минздрава",
+        ],
+        correct: 2,
+        explanation: "Ординатура — ступень после вуза. Хочешь стать хирургом, неврологом, кардиологом — нужна ординатура. Длится от 2 лет (терапия, педиатрия) до 5 лет (нейрохирургия, сердечно-сосудистая хирургия).",
+      },
+      {
+        text: "Как устроен минимальный проходной балл ЕГЭ в медвуз?",
+        options: [
+          "Единый для всей страны — 36 баллов по каждому предмету",
+          "Единый для всей страны — 60 баллов по каждому предмету",
+          "Каждый вуз устанавливает свой минимальный порог самостоятельно",
+          "Минимального балла не существует",
+        ],
+        correct: 2,
+        explanation: "Государственный минимум — 36 баллов (порог сдачи ЕГЭ). Но каждый вуз устанавливает собственный минимальный порог для подачи документов — обычно 45–60 баллов. Реальный конкурсный проходной в топ-вузах — от 80 баллов по профильным предметам.",
+      },
+      {
+        text: "ИД в заявлении о поступлении — это...",
+        options: [
+          "Идентификационный документ (паспорт или СНИЛС)",
+          "Дополнительные баллы за индивидуальные достижения",
+          "Инструкция для документов приёмной комиссии",
+          "Итоговый диктант",
+        ],
+        correct: 1,
+        explanation: "Индивидуальные достижения — до 10 дополнительных баллов, которые вуз прибавляет к сумме ЕГЭ. Золотая медаль, значок ГТО, волонтёрство, статус чемпиона — каждый вуз сам определяет перечень.",
+      },
+      {
+        text: "После медицинского колледжа (СПО) можно поступить в медвуз?",
+        options: [
+          "Нет — нужно сначала пройти программу старшей школы заново",
+          "Да, но только на целевое обучение",
+          "Да, по результатам ЕГЭ на общих основаниях",
+          "Да, но только в вузы своего региона",
+        ],
+        correct: 2,
+        explanation: "Выпускники колледжей поступают в вузы по ЕГЭ на общих основаниях или в рамках целевой квоты. Никаких ограничений по региону нет. Основание: Приказ Минобрнауки № 1076 от 21.08.2020.",
+      },
+      {
+        text: "Что в основном изучают на первых двух курсах медвуза?",
+        options: [
+          "Сразу клинические дисциплины: терапию, хирургию, педиатрию",
+          "Только практику в больницах",
+          "Иностранный язык и историю медицины",
+          "Фундамент: анатомию, физиологию, биохимию, гистологию",
+        ],
+        correct: 3,
+        explanation: "Первые 2–3 курса — фундаментальные науки: анатомия, гистология, нормальная физиология, биохимия, латинский язык. Это база, без которой клинические дисциплины невозможно понять. С 3–4 курса начинаются терапия, хирургия, педиатрия.",
+      },
+      {
+        text: "КЦП в документах приёмной комиссии — это...",
+        options: [
+          "Контрольный центр поступления",
+          "Количество бюджетных мест по направлению (контрольные цифры приёма)",
+          "Компьютерный центр проверки документов",
+          "Конкурс целевых программ",
+        ],
+        correct: 1,
+        explanation: "КЦП — контрольные цифры приёма. Это число бюджетных мест, которое государство выделяет конкретному вузу по каждому направлению подготовки на учебный год.",
+      },
+      {
+        text: "Олимпиада «Будущее медицины» проводится для учеников...",
+        options: ["5–8 классов", "7–9 классов", "9–11 классов", "Только 11 класса"],
+        correct: 2,
+        explanation: "Всероссийская олимпиада «Будущее медицины» — для учеников 9–11 классов по химии и биологии. Проводится с 2010 года. Призёры получают льготы при поступлении в медвузы.",
+      },
+      {
+        text: "Какой предмет точно НЕ нужен при поступлении на «Лечебное дело» в большинстве вузов?",
+        options: ["Химия", "Биология", "Русский язык", "История"],
+        correct: 3,
+        explanation: "История не входит в стандартный набор ЕГЭ для медицинских специальностей. Нужны химия, биология и русский язык. Физика иногда нужна для направлений типа медицинской биофизики или биотехнологии — уточняйте у конкретного вуза.",
+      },
+    ];
+
+    const LEVELS = [
+      {
+        min: 0, max: 4,
+        emoji: "🩺",
+        title: "Начало пути",
+        text: "Ничего страшного — большинство так и начинают. Поступление в медвуз требует знаний, которых в школьной программе почти нет. Загляни в раздел «Хочу в мед» — там есть всё, чтобы разобраться с нуля.",
+        color: "#e74c3c",
+      },
+      {
+        min: 5, max: 8,
+        emoji: "📋",
+        title: "Уже в теме",
+        text: "Базовое понимание есть. Ты знаешь главное, но в деталях ещё пробелы — именно там часто теряются время и баллы при подаче документов. Изучи материалы про целевое обучение и олимпиады.",
+        color: "#f39c12",
+      },
+      {
+        min: 9, max: 11,
+        emoji: "🔬",
+        title: "Почти готов",
+        text: "Серьёзная подготовка. Ты разбираешься в системе лучше, чем многие старшекурсники. Осталось перевести знания в баллы ЕГЭ — и вперёд.",
+        color: "#3b6bef",
+      },
+      {
+        min: 12, max: 12,
+        emoji: "🏥",
+        title: "Готов к поступлению",
+        text: "Идеальный результат. Ты знаешь как система работает — теперь дело за подготовкой к экзаменам. Платформа «Будущий врач» поможет не упустить ни одного важного шага.",
+        color: "#2ecc71",
+      },
+    ];
+
+    function Quiz() {
+      const [current, setCurrent] = useState(0);
+      const [selected, setSelected] = useState(null);
+      const [revealed, setRevealed] = useState(false);
+      const [answers, setAnswers] = useState([]);
+      const [finished, setFinished] = useState(false);
+
+      const q = questions[current];
+      const score = answers.filter(Boolean).length;
+      const level = LEVELS.find(l => score >= l.min && score <= l.max);
+      const progress = (current / questions.length) * 100;
+
+      function handleSelect(idx) {
+        if (!revealed) setSelected(idx);
+      }
+
+      function handleCheck() {
+        setRevealed(true);
+      }
+
+      function handleNext() {
+        const newAnswers = [...answers, selected === q.correct];
+        if (current + 1 >= questions.length) {
+          setAnswers(newAnswers);
+          setFinished(true);
+        } else {
+          setAnswers(newAnswers);
+          setCurrent(current + 1);
+          setSelected(null);
+          setRevealed(false);
+        }
+      }
+
+      function handleRestart() {
+        setCurrent(0);
+        setSelected(null);
+        setRevealed(false);
+        setAnswers([]);
+        setFinished(false);
+      }
+
+      if (finished) {
+        return (
+          <div className="card">
+            <div className="result-emoji">{level.emoji}</div>
+            <div className="result-score" style={{ color: level.color }}>
+              {score} / {questions.length}
+            </div>
+            <div className="result-title">{level.title}</div>
+            <div className="result-text">{level.text}</div>
+            <div className="breakdown">
+              {answers.map((correct, i) => (
+                <div
+                  key={i}
+                  className="dot"
+                  style={{ background: correct ? "#2ecc71" : "#e74c3c" }}
+                  title={questions[i].text}
+                />
+              ))}
+            </div>
+            <a
+              className="result-link"
+              href="https://futuredoc.minzdrav.gov.ru/pre-university-education"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Открыть раздел «Хочу в мед» →
+            </a>
+            <button className="restart-btn" onClick={handleRestart}>
+              Пройти ещё раз
+            </button>
+          </div>
+        );
+      }
+
+      return (
+        <div className="card">
+          <div className="header">
+            <div className="header-label">Готов ли ты к поступлению в мед?</div>
+            <div className="counter">{current + 1} / {questions.length}</div>
+          </div>
+
+          <div className="progress-track">
+            <div className="progress-fill" style={{ width: `${progress}%` }} />
+          </div>
+
+          <div className="question">{q.text}</div>
+
+          <div className="options">
+            {q.options.map((opt, idx) => {
+              let cls = "option";
+              if (revealed) {
+                if (idx === q.correct) cls += " correct";
+                else if (idx === selected) cls += " wrong";
+              } else if (idx === selected) {
+                cls += " selected";
+              }
+              return (
+                <button
+                  key={idx}
+                  className={cls}
+                  onClick={() => handleSelect(idx)}
+                  disabled={revealed}
+                >
+                  <span className="option-letter">
+                    {String.fromCharCode(65 + idx)}
+                  </span>
+                  {opt}
+                </button>
+              );
+            })}
+          </div>
+
+          {revealed && (
+            <div className="explanation">
+              <span className="expl-icon">💡</span>
+              {q.explanation}
+            </div>
+          )}
+
+          {!revealed ? (
+            <button
+              className="primary-btn"
+              disabled={selected === null}
+              onClick={handleCheck}
+            >
+              Проверить
+            </button>
+          ) : (
+            <button className="primary-btn" onClick={handleNext}>
+              {current + 1 < questions.length ? "Следующий вопрос →" : "Смотреть результат"}
+            </button>
+          )}
+
+          <div className="score-sofar">
+            Правильно: {score} из {answers.length}
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<Quiz />);
+  </script>
+</body>
+</html>
